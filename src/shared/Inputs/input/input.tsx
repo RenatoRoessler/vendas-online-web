@@ -1,16 +1,16 @@
-import { Input as InputAntd } from 'antd';
+import { Input as InputAntd, InputProps as InputPropsAntd } from 'antd';
 
-import { BoxInput, TitleInput } from '../input.styled';
+import { BoxInput, TitleInput } from '../input.styles';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputPropsAntd {
   title?: string;
 }
 
 const Input = ({ title, ...props }: InputProps) => {
   return (
     <BoxInput>
-      {title && <TitleInput {...props}>{title}</TitleInput>}
-      <InputAntd />
+      {title && <TitleInput>{title}</TitleInput>}
+      <InputAntd {...props} />
     </BoxInput>
   );
 };
