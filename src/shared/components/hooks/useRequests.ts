@@ -18,19 +18,22 @@ export const useRequests = () => {
       });
   };
 
-  const postRequest = async (url: string, body: object) => {
+  const postRequest = async <T>(url: string, body: object): Promise<T | undefined> => {
     setLoading(true);
-    return await connectionAPIPost(url, body)
+    const returnData = await connectionAPIPost<T>(url, body)
       .then((result) => {
         setNotification('Usuário logado com sucesso', 'success');
         return result;
       })
       .catch((error: Error) => {
         setNotification(error.message, 'error');
+        return undefined;
       })
       .finally(() => {
         setLoading(false);
       });
+
+    return returnData;
   };
 
   return {
