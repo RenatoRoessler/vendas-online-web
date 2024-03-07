@@ -1,9 +1,10 @@
-import axios from 'axios';
 import { useState } from 'react';
 
-import Button from '../../../shared/button/Button';
-import SVGLogo from '../../../shared/button/icons/SVGLogo';
-import Input from '../../../shared/Inputs/Input';
+import Button from '../../../shared/components/button/Button';
+import SVGLogo from '../../../shared/components/button/icons/SVGLogo';
+import { useGlobalContext } from '../../../shared/components/hooks/useGlobalContext';
+import { useRequests } from '../../../shared/components/hooks/useRequests';
+import Input from '../../../shared/components/Inputs/Input';
 import {
   BackgroundImage,
   CointainerLoginScreen,
@@ -13,8 +14,10 @@ import {
 } from '../styles/loginScreen.styles';
 
 const LoginScreen = () => {
+  const { accessToken, setAccessToken } = useGlobalContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { postRequest, loading } = useRequests();
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -25,23 +28,8 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    const returnObject = await axios({
-      method: 'post',
-      url: 'http://localhost:8080/auth',
-      data: {
-        email,
-        password,
-      },
-    })
-      .catch(() => {
-        alert('Usuário ou senha invalida');
-      })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((result: any) => {
-        alert(`'Login efetuado com sucesso' ${result.data.accessToken}`);
-        return result;
-      });
-    console.log(returnObject);
+    setAccessToken('123');
+    postRequest('http://localhost:8080/auth', { email, password });
   };
 
   return (
@@ -51,7 +39,7 @@ const LoginScreen = () => {
         <LimitedContainer>
           <SVGLogo />
           <TitleLogin level={2} type="secondary">
-            LOGIN
+            LOGIN {accessToken}
           </TitleLogin>
           <Input title="USUÁRIO" margin="32px 0px 0px" value={email} onChange={handleEmail} />
           <Input
@@ -61,7 +49,7 @@ const LoginScreen = () => {
             value={password}
             onChange={handlePassword}
           />
-          <Button type="primary" margin="64px 0px 16px 0px" onClick={handleLogin}>
+          <Button type="primary" margin="64px 0px 16px 0px" onClick={handleLogin} loading={loading}>
             ENTRAR
           </Button>
         </LimitedContainer>
