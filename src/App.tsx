@@ -11,11 +11,13 @@ function App() {
   const { contextHolder } = useNotification();
   const { user, setUser } = useGlobalContext();
 
-  const routes: RouteObject[] = [...loginRoutes, ...firstScreenRoutes];
-  const routesLoggedIn: RouteObject[] = [...productScreenRoutes].map((route) => ({
-    ...route,
-    loader: () => verifyLoggedIn(setUser, user),
-  }));
+  const routes: RouteObject[] = [...loginRoutes];
+  const routesLoggedIn: RouteObject[] = [...productScreenRoutes, ...firstScreenRoutes].map(
+    (route) => ({
+      ...route,
+      loader: () => verifyLoggedIn(setUser, user),
+    }),
+  );
   const router = createBrowserRouter([...routes, ...routesLoggedIn]);
 
   return (
