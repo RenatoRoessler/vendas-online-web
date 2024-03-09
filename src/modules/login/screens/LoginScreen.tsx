@@ -2,8 +2,8 @@ import { useState } from 'react';
 
 import Button from '../../../shared/components/button/Button';
 import SVGLogo from '../../../shared/components/button/icons/SVGLogo';
-import { useRequests } from '../../../shared/components/hooks/useRequests';
 import Input from '../../../shared/components/Inputs/Input';
+import { useRequests } from '../../../shared/hooks/useRequests';
 import {
   BackgroundImage,
   CointainerLoginScreen,
@@ -11,12 +11,11 @@ import {
   LimitedContainer,
   TitleLogin,
 } from '../styles/loginScreen.styles';
-import { UserType } from '../types/UserType';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { postRequest, loading } = useRequests();
+  const { authRequest, loading } = useRequests();
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -27,7 +26,7 @@ const LoginScreen = () => {
   };
 
   const handleLogin = () => {
-    postRequest<UserType>('http://localhost:8080/auth', { email, password });
+    authRequest({ email, password });
   };
 
   return (

@@ -1,11 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { connectionAPIGet, connectionAPIPost } from '../../functions/connection/connectionApi';
+import { AuthType } from '../../modules/login/types/AuthType';
+import { ProductRoutesEnum } from '../../modules/product/routes';
+import { ERROR_INVALID_PASSWORD } from '../constants/errorStatus';
+import { URL_AUTH } from '../constants/urls';
+import { setAuthorizationteToken } from '../functions/connection/auth';
+import { connectionAPIGet, connectionAPIPost } from '../functions/connection/connectionApi';
 import { useGlobalContext } from './useGlobalContext';
 
 export const useRequests = () => {
   const [loading, setLoading] = useState(false);
   const { setNotification } = useGlobalContext();
+  const navigator = useNavigate();
 
   const getRequest = async (url: string) => {
     setLoading(true);
@@ -36,9 +43,26 @@ export const useRequests = () => {
     return returnData;
   };
 
+  const authRequest = async (body: object): Promise<void> => {
+    setLoading(true);
+    await connectionAPIPost<AuthType>(URL_AUTH, body)
+      .then((result) => {
+        setNotification('Entrando...', 'success');
+        setAuthorizationteToken(result.accessToken);
+        navigator(ProductRoutesEnum.PRODUCT);
+      })
+      .catch(() => {
+        setNotification(ERROR_INVALID_PASSWORD, 'error');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return {
     loading,
     getRequest,
     postRequest,
+    authRequest,
   };
 };
