@@ -6,7 +6,10 @@ import { ProductRoutesEnum } from '../../modules/product/routes';
 import { ERROR_INVALID_PASSWORD } from '../constants/errorStatus';
 import { URL_AUTH } from '../constants/urls';
 import { setAuthorizationteToken } from '../functions/connection/auth';
-import { connectionAPIGet, connectionAPIPost } from '../functions/connection/connectionApi';
+import ConnectionAPI, {
+  connectionAPIPost,
+  MethodType,
+} from '../functions/connection/connectionApi';
 import { useGlobalContext } from './useGlobalContext';
 
 export const useRequests = () => {
@@ -14,15 +17,27 @@ export const useRequests = () => {
   const { setNotification, setUser } = useGlobalContext();
   const navigator = useNavigate();
 
-  const getRequest = async (url: string) => {
+  const request = async <T>(
+    url: string,
+    method: MethodType,
+    saveGlobal?: (object: T) => void,
+    body?: object,
+  ): Promise<T | undefined> => {
     setLoading(true);
-    return await connectionAPIGet(url)
+    const returnObject: T | undefined = await ConnectionAPI.connect<T>(url, method, body)
       .then((result) => {
+        if (saveGlobal) saveGlobal(result);
         return result;
       })
-      .catch(() => {
-        alert('Usuário ou senha invalida');
+      .catch((error: Error) => {
+        setNotification(error.message, 'error');
+        return undefined;
+      })
+      .finally(() => {
+        setLoading(false);
       });
+
+    return returnObject;
   };
 
   const postRequest = async <T>(url: string, body: object): Promise<T | undefined> => {
@@ -63,7 +78,7 @@ export const useRequests = () => {
 
   return {
     loading,
-    getRequest,
+    request,
     postRequest,
     authRequest,
   };
