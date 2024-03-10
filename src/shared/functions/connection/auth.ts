@@ -17,20 +17,16 @@ export const getAuthorizationToken = () => {
   return localStorage.getItem(AUTHORIZATION_KEY);
 };
 
-export const verifyLoggedIn = async (setUser: (user: UserType) => void, user?: UserType) => {
+export const verifyLoggedIn = async () => {
   const token = getAuthorizationToken();
   if (!token) {
     location.href = '/login';
   }
-  if (!user) {
-    await connectionAPIGet<UserType>(URL_USER)
-      .then((userReturn) => {
-        setUser(userReturn);
-      })
-      .catch(() => {
-        unsetAuthorizationToken();
-        location.href = '/login';
-      });
-  }
+
+  await connectionAPIGet<UserType>(URL_USER).catch(() => {
+    unsetAuthorizationToken();
+    location.href = '/login';
+  });
+
   return null;
 };
